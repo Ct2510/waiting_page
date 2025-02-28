@@ -325,6 +325,12 @@
         }
     }
 
+    function adjustPosition(player) {
+        while (player.pos.x + player.matrix[0].length > arena[0].length) {
+            player.pos.x--;
+        }
+    }
+
     let dropCounter = 0;
     let dropInterval = 1000;
 
@@ -388,6 +394,7 @@
         } else if (event.keyCode === 16) { // Shift key
             if (storedPiece) {
                 [player.matrix, storedPiece] = [storedPiece, player.matrix];
+                adjustPosition(player);
             } else {
                 storedPiece = player.matrix;
                 playerReset();
