@@ -64,6 +64,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         const audio = document.getElementById('background-music');
         audio.volume = 1.0;
+        let isMusicPlaying = true;
 
         // Play audio on any key press or mouse click
         function playAudio() {
@@ -83,6 +84,17 @@
         // Check for errors
         audio.addEventListener('error', function(e) {
             console.error('Error occurred while loading audio:', e);
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.keyCode === 77) { // M key
+                if (isMusicPlaying) {
+                    audio.pause();
+                } else {
+                    audio.play();
+                }
+                isMusicPlaying = !isMusicPlaying;
+            }
         });
     });
 
