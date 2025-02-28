@@ -35,16 +35,20 @@
             right: 10px;
             width: 150px; /* Adjust the size as needed */
         }
+        .game-area {
+            display: flex;
+            align-items: flex-start;
+        }
         canvas {
             background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black to match the background */
             display: block;
-            margin: 20px auto;
+            margin: 20px;
             border: 2px solid #ffffff;
         }
         #score {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 10px; /* Adjusted position */
+            right: 20px; /* Adjusted position */
             color: #ffcc00; /* Bright yellow color for better visibility */
             font-size: 2.5em; /* Increased font size */
             font-weight: bold; /* Bold font */
@@ -58,23 +62,16 @@
 <div class="container">
     <div class="message">Please wait, we are fixing the issue...</div>
 </div>
-<canvas id="tetris" width="240" height="400"></canvas> <!-- Adjusted height -->
+<div class="game-area">
+    <canvas id="tetris" width="240" height="400"></canvas> <!-- Adjusted height -->
+    <canvas id="storage" width="80" height="80"></canvas> <!-- Storage canvas -->
+</div>
 <div id="score">0</div>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const audio = document.getElementById('background-music');
         audio.volume = 1.0;
         let isMusicPlaying = true;
-
-        // Play audio on any key press or mouse click
-        function playAudio() {
-            audio.play().catch(function(error) {
-                console.error('Error occurred while trying to play audio:', error);
-            });
-        }
-
-        document.addEventListener('click', playAudio);
-        document.addEventListener('keydown', playAudio);
 
         // Check if the audio can be played
         audio.addEventListener('canplaythrough', function() {
@@ -101,6 +98,12 @@
     const canvas = document.getElementById('tetris');
     const context = canvas.getContext('2d');
     context.scale(20, 20);
+
+    const storageCanvas = document.getElementById('storage');
+    const storageContext = storageCanvas.getContext('2d');
+    storageContext.scale(20, 20);
+
+    let storedPiece = null;
 
     function arenaSweep() {
         let rowCount = 1;
@@ -188,12 +191,12 @@
         }
     }
 
-    function drawMatrix(matrix, offset) {
+    function drawMatrix(matrix, offset, ctx) {
         matrix.forEach((row, y) => {
             row.forEach((value, x) => {
                 if (value !== 0) {
-                    context.fillStyle = colors[value];
-                    context.fillRect(x + offset.x,
+                    ctx.fillStyle = colors[value];
+                    ctx.fillRect(x + offset.x,
                         y + offset.y,
                         1, 1);
                 }
@@ -228,13 +231,21 @@
         context.setLineDash([]);
     }
 
+    function drawStoredPiece() {
+        storageContext.clearRect(0, 0, storageCanvas.width, storageCanvas.height);
+        if (storedPiece) {
+            drawMatrix(storedPiece, {x: 0, y: 0}, storageContext);
+        }
+    }
+
     function draw() {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         drawGrid();
-        drawMatrix(arena, {x: 0, y: 0});
+        drawMatrix(arena, {x: 0, y: 0}, context);
         drawGuideLines();
-        drawMatrix(player.matrix, player.pos);
+        drawMatrix(player.matrix, player.pos, context);
+        drawStoredPiece();
     }
 
     function merge(arena, player) {
@@ -374,6 +385,16 @@
             playerReset();
             arenaSweep();
             updateScore();
+        } else if (event.keyCode === 16) { // Shift key
+            if (storedPiece) {
+                [player.matrix, storedPiece] = [storedPiece, player.matrix];
+                player.pos.y = 0;
+                player.pos.x = (arena[0].length / 2 | 0) -
+                    (player.matrix[0].length / 2 | 0);
+            } else {
+                storedPiece = player.matrix;
+                playerReset();
+            }
         }
     });
 
