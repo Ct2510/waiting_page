@@ -329,6 +329,9 @@
         while (player.pos.x + player.matrix[0].length > arena[0].length) {
             player.pos.x--;
         }
+        while (player.pos.x < 0) {
+            player.pos.x++;
+        }
     }
 
     let dropCounter = 0;
