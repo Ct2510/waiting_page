@@ -54,6 +54,18 @@
             font-weight: bold; /* Bold font */
             text-shadow: 2px 2px 4px #000000; /* Add shadow for better contrast */
         }
+        #rules {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: #ffffff;
+            font-size: 1.2em;
+        }
     </style>
 </head>
 <body>
@@ -67,6 +79,14 @@
     <canvas id="storage" width="80" height="80"></canvas> <!-- Storage canvas -->
 </div>
 <div id="score">0</div>
+<div id="rules">
+    <p>Game Rules:</p>
+    <p>Press Enter to start the game</p>
+    <p>Press Esc to pause/resume</p>
+    <p>Press Shift to store/retrieve a piece</p>
+    <p>Press Space to drop the piece</p>
+    <p>Press M to toggle music</p>
+</div>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const audio = document.getElementById('background-music');
@@ -104,6 +124,8 @@
     storageContext.scale(20, 20);
 
     let storedPiece = null;
+    let isPaused = false;
+    let isGameStarted = false;
 
     function arenaSweep() {
         let rowCount = 1;
@@ -339,15 +361,17 @@
 
     let lastTime = 0;
     function update(time = 0) {
-        const deltaTime = time - lastTime;
-        lastTime = time;
+        if (!isPaused && isGameStarted) {
+            const deltaTime = time - lastTime;
+            lastTime = time;
 
-        dropCounter += deltaTime;
-        if (dropCounter > dropInterval) {
-            playerDrop();
+            dropCounter += deltaTime;
+            if (dropCounter > dropInterval) {
+                playerDrop();
+            }
+
+            draw();
         }
-
-        draw();
         requestAnimationFrame(update);
     }
 
@@ -402,12 +426,21 @@
                 storedPiece = player.matrix;
                 playerReset();
             }
+        } else if (event.keyCode === 27) { // Esc key
+            if (isGameStarted) {
+                isPaused = !isPaused;
+            }
+        } else if (event.keyCode === 13) { // Enter key
+            if (!isGameStarted) {
+                isGameStarted = true;
+                document.getElementById('rules').style.display = 'none';
+                update();
+            }
         }
     });
 
     playerReset();
     updateScore();
-    update();
 </script>
 </body>
 </html>
