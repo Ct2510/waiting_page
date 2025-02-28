@@ -48,7 +48,7 @@
         #score {
             position: absolute;
             top: 10px; /* Adjusted position */
-            right: 20px; /* Adjusted position */
+            left: 20px; /* Adjusted position */
             color: #ffcc00; /* Bright yellow color for better visibility */
             font-size: 2.5em; /* Increased font size */
             font-weight: bold; /* Bold font */
@@ -388,9 +388,6 @@
         } else if (event.keyCode === 16) { // Shift key
             if (storedPiece) {
                 [player.matrix, storedPiece] = [storedPiece, player.matrix];
-                player.pos.y = 0;
-                player.pos.x = (arena[0].length / 2 | 0) -
-                    (player.matrix[0].length / 2 | 0);
             } else {
                 storedPiece = player.matrix;
                 playerReset();
