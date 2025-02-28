@@ -399,15 +399,15 @@
     };
 
     document.addEventListener('keydown', event => {
-        if (event.keyCode === 37) {
+        if (event.keyCode === 37 || event.keyCode === 65) { // Left Arrow or 'A' key
             playerMove(-1);
-        } else if (event.keyCode === 39) {
+        } else if (event.keyCode === 39 || event.keyCode === 68) { // Right Arrow or 'D' key
             playerMove(1);
-        } else if (event.keyCode === 40) {
+        } else if (event.keyCode === 40 || event.keyCode === 83) { // Down Arrow or 'S' key
             playerDrop();
-        } else if (event.keyCode === 81) {
+        } else if (event.keyCode === 81) { // 'Q' key
             playerRotate(-1);
-        } else if (event.keyCode === 87 || event.keyCode === 38) { // Added Up Arrow key
+        } else if (event.keyCode === 87 || event.keyCode === 38) { // Up Arrow or 'W' key
             playerRotate(1);
         } else if (event.keyCode === 32) { // Spacebar key
             while (!collide(arena, player)) {
